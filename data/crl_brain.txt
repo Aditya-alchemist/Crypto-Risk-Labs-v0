@@ -1,0 +1,6 @@
+CRL core rules:
+1) Trade only after 5m candle close confirmation.
+2) Never enter on wick touches.
+3) Respect predefined stop loss before position sizing.
+4) Favor setups aligned with higher timeframe structure.
+5) Reject entries when risk to stop is undefined.

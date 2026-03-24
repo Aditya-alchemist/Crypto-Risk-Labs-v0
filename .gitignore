@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+data/crl.db
+data/ml_model.pkl
+data/ml_fallback.json
+dashboard/node_modules/
+dashboard/dist/

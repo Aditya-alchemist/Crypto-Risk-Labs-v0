@@ -1,0 +1,196 @@
+:root {
+  --bg: #0b1320;
+  --bg-2: #122033;
+  --card: #13263f;
+  --text: #e6f0ff;
+  --muted: #95a9c5;
+  --accent: #46d3b0;
+  --danger: #ff6d67;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at 10% 10%, #1f3555, #0b1320 55%);
+  color: var(--text);
+}
+
+.app-shell {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 1rem;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.chart-card {
+  grid-column: 1 / -1;
+}
+
+.card {
+  background: linear-gradient(160deg, var(--card), var(--bg-2));
+  border: 1px solid #27466f;
+  border-radius: 14px;
+  padding: 0.9rem;
+}
+
+.chart-card .price {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.tv-chart {
+  width: 100%;
+  height: min(78vh, 860px);
+  min-height: 520px;
+  margin-top: 0.75rem;
+  border: 1px solid #214061;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.hint {
+  color: var(--muted);
+}
+
+.simple-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.simple-list li,
+.level-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid #214061;
+}
+
+.stats-grid .stat {
+  margin: 0.7rem 0;
+}
+
+.stats-grid label {
+  color: var(--muted);
+  display: block;
+}
+
+.probability-bar {
+  height: 16px;
+  background: #1d3858;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.probability-bar div {
+  height: 100%;
+  background: linear-gradient(90deg, var(--danger), var(--accent));
+}
+
+.mc-bars {
+  height: 130px;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 0.35rem;
+  border: 1px solid #214061;
+  border-radius: 10px;
+  background: #10233a;
+}
+
+.mc-bar {
+  flex: 1;
+  min-height: 6px;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #6ee7b7, #1d4ed8);
+}
+
+.chat-panel textarea {
+  width: 100%;
+  resize: vertical;
+  border-radius: 8px;
+  border: 1px solid #2b4b74;
+  background: #0f2238;
+  color: var(--text);
+  padding: 0.6rem;
+}
+
+.chat-form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.chat-form button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 0.8rem;
+  background: linear-gradient(120deg, #38bdf8, #22c55e);
+  color: #082032;
+  font-weight: 700;
+}
+
+.chat-history {
+  min-height: 220px;
+}
+
+.chat-scroll {
+  max-height: 320px;
+  overflow: auto;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.chat-bubble {
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  line-height: 1.4;
+}
+
+.chat-bubble.user {
+  background: #24496f;
+}
+
+.chat-bubble.assistant {
+  background: #163452;
+}
+
+.trade-log table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.trade-log th,
+.trade-log td {
+  text-align: left;
+  padding: 0.45rem;
+  border-bottom: 1px solid #214061;
+}
+
+@media (max-width: 800px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tv-chart {
+    height: 62vh;
+    min-height: 380px;
+  }
+}
