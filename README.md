@@ -238,8 +238,7 @@ Monte Carlo Probability: 42.67%
 - Target 2: $71,200 ✅ **HIT** (+0.67%)
 - Stop Loss: $70,145
 - **Result:** TP2 hit before any pullback
-
-![Box Breakout Long Entry](docs/screenshots/btc-box-breakout-0714.png)
+- *Chart: Price consolidated at support then broke upward, hitting targets in consecutive 5m candles*
 
 ---
 
@@ -250,8 +249,7 @@ Monte Carlo Probability: 42.67%
 - Target 3: $71,500 ✅ **HIT** (+1.80%)
 - Risk/Reward: 1:3.6
 - **Result:** All three targets hit in 6 hours
-
-![Extended Multi-Target Hit](docs/screenshots/btc-multi-target-0201.png)
+- *Chart: Strong uptrend continuation, multiple candles closed above each target, no pullback to SL*
 
 ---
 
@@ -261,8 +259,7 @@ Monte Carlo Probability: 42.67%
 - Monte Carlo Probability: 42%
 - Historical Hit-Rate: 12.5%
 - **Result:** Price reversed before SL, closed at TP1
-
-![Channel Analysis 12:44](docs/screenshots/btc-channel-1244.png)
+- *Chart: Initially broke support but bounced, halted at TP1 level with strong reversal signal*
 
 ---
 
@@ -271,8 +268,7 @@ Monte Carlo Probability: 42.67%
 - Entry: $69,433
 - Risk Level: $69,050
 - **Result:** Target hit after 90-minute wait, confirmed by candle close
-
-![Consolidation Breakout 11:56](docs/screenshots/btc-consolidation-1156.png)
+- *Chart: Ranging market with tight consolidation, broke upper band with volume confirmation*
 
 ---
 
@@ -314,7 +310,12 @@ WARNING: Entry only on 5m candle CLOSE
 confirmation. Never trade on a wick.
 ```
 
-![Telegram Bot Analysis Output](docs/screenshots/telegram-analysis-output.png)
+**Screenshot Details:**
+- Timestamp: March 25, 2026 at 1:05 AM UTC
+- Current BTC price: $69,369.00
+- Format: Telegram mobile UI with dark theme
+- Response time: <2 seconds from user message to analysis
+- Confidence breakdown shows proper weighting of all 3 sources (42% MC + 12.5% Historical + 50% ML = 33.7% blended)
 
 ---
 
@@ -706,19 +707,15 @@ flowchart TD
 
 Confidence blending follows a weighted model with sample calibration. Historical confidence is gradually trusted more as sample count increases.
 
-$$
-\text{sample_factor} = \min\left(\frac{n}{50}, 1\right)
-$$
+**Sample Factor:** $sf = \min(n/50, 1)$ — Weight historical data proportional to sample count (caps at 50 samples)
 
-$$
-\text{calibrated_historical} = \text{historical} \cdot \text{sample_factor} + 50 \cdot (1-\text{sample_factor})
-$$
+**Calibrated Historical:** $C_h = historical \times sf + 50(1-sf)$ — Blends actual win-rate toward 50% when samples are low
 
-$$
-\text{blended} = 0.35 \cdot \text{calibrated_historical} + 0.40 \cdot \text{monte_carlo} + 0.25 \cdot \text{ml_confidence}
-$$
-
-The final confidence is clamped to $[0,100]$.
+**Blended Confidence:** $C = 0.35 \cdot C_h + 0.40 \cdot C_m + 0.25 \cdot C_l$
+- $C_h$ = Calibrated historical hit-rate
+- $C_m$ = Monte Carlo probability  
+- $C_l$ = ML confidence score
+- **Range:** Clamped to [0, 100]
 
 ## Telegram Experience
 
