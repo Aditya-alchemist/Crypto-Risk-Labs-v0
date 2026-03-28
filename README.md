@@ -292,36 +292,36 @@ Monte Carlo Probability: 42.67%
 
 **User sends:**
 ```
-/analyze i want to buy at current price, analyze market
+/analyze i want to short at current price, channel breakdown
 ```
 
 **Bot replies (in Telegram chat):**
 ```
 CRL BOT ANALYSIS
 ================
-Setup: Box Breakout (long)
+Setup: Channel Breakdown (short)
 Market Price: $69,369.00
 
 TRADE PLAN
 Entry Zone: $69,369.00
-Target 1: $70,145.93
-Target 2: $70,700.88
-Target 3: $71,366.83
-Stop Loss: $68,814.05
-Risk/Reward: 1:3.60
+Target 1: $68,814.05
+Target 2: $68,200.00
+Target 3: $67,500.00
+Stop Loss: $70,145.93
+Risk/Reward: 1:3.40
 
 CONFIDENCE ENGINE
-Monte Carlo (300): 42.0%
-Historical hit-rate: 12.5%
-ML model: WIN (50.00%)
-Blended confidence: 33.7%
+Monte Carlo (300): 45.2%
+Historical hit-rate: 18.7%
+ML model: WIN (55.00%)
+Blended confidence: 39.5%
 
 AI NOTE
 Fallback local analysis used (OpenRouter
 credits exhausted (402)). Pattern and bias
 inferred from your text.
 
-VERDICT: LOW EDGE
+VERDICT: MODERATE EDGE
 WARNING: Entry only on 5m candle CLOSE
 confirmation. Never trade on a wick.
 ```
