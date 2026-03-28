@@ -1,6 +1,8 @@
 import React from 'react'
 
 export default function StatsPanel({ price, levelsCount, tradesCount, analytics }) {
+  const momentum = Number(analytics?.momentum_pct || 0)
+
   return (
     <section className="card stats-grid">
       <h2>Market Snapshot</h2>
@@ -22,7 +24,7 @@ export default function StatsPanel({ price, levelsCount, tradesCount, analytics 
       </div>
       <div className="stat">
         <label>Momentum</label>
-        <strong>{Number(analytics?.momentum_pct || 0).toFixed(3)}%</strong>
+        <strong className={momentum >= 0 ? 'good' : 'bad'}>{momentum.toFixed(3)}%</strong>
       </div>
       <div className="stat">
         <label>Avg Pattern Hit-Rate</label>

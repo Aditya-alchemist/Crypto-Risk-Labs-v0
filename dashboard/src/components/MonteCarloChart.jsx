@@ -6,7 +6,7 @@ export default function MonteCarloChart({ probability = 0, bins = [] }) {
 
   return (
     <section className="card">
-      <h2>Monte Carlo</h2>
+      <h2>Monte Carlo Distribution</h2>
       <div className="mc-bars">
         {bins.map((b, i) => (
           <div
@@ -17,7 +17,7 @@ export default function MonteCarloChart({ probability = 0, bins = [] }) {
           />
         ))}
       </div>
-      <p>Estimated TP before SL: {clamped.toFixed(1)}%</p>
+      <p>Estimated probability of TP before SL: <strong>{clamped.toFixed(1)}%</strong></p>
     </section>
   )
 }

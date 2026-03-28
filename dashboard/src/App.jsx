@@ -15,6 +15,7 @@ export default function App() {
   const [mc, setMc] = useState({ hit_tp_probability: 50, bins: [] })
   const [chatMessages, setChatMessages] = useState([])
   const [chatBusy, setChatBusy] = useState(false)
+  const [lastRefresh, setLastRefresh] = useState(null)
 
   useEffect(() => {
     let ws
@@ -26,6 +27,7 @@ export default function App() {
       setTrades(t)
       setAnalytics(a || {})
       setMc(m || { hit_tp_probability: 50, bins: [] })
+      setLastRefresh(new Date())
     }
 
     load().catch(console.error)
@@ -51,10 +53,15 @@ export default function App() {
     }, 1000)
 
     const interval = setInterval(() => {
-      getTrades().then(setTrades).catch(console.error)
-      getLevels().then(setLevels).catch(console.error)
-      getAnalytics().then(setAnalytics).catch(console.error)
-      getMonteCarlo().then(setMc).catch(console.error)
+      Promise.all([getTrades(), getLevels(), getAnalytics(), getMonteCarlo()])
+        .then(([t, l, a, m]) => {
+          setTrades(t)
+          setLevels(l)
+          setAnalytics(a)
+          setMc(m)
+          setLastRefresh(new Date())
+        })
+        .catch(console.error)
     }, 2500)
 
     return () => {
@@ -92,29 +99,47 @@ export default function App() {
 
   return (
     <main className="app-shell">
-      <header>
-        <h1>CRL Trading Intelligence</h1>
-        <p>Win rate: {winRate.toFixed(1)}%</p>
+      <header className="topbar card">
+        <div>
+          <p className="eyebrow">Crypto Risk Labs</p>
+          <h1>BTC Intelligence Command Center</h1>
+          <p className="subtle">Live price, structure levels, Monte Carlo confidence, and AI trade reasoning in one screen.</p>
+        </div>
+        <div className="kpi-strip">
+          <div className="kpi-pill">
+            <span>Win Rate</span>
+            <strong>{winRate.toFixed(1)}%</strong>
+          </div>
+          <div className="kpi-pill">
+            <span>BTC</span>
+            <strong>${Number(price || 0).toLocaleString()}</strong>
+          </div>
+          <div className="kpi-pill">
+            <span>Last Sync</span>
+            <strong>{lastRefresh ? lastRefresh.toLocaleTimeString() : 'Loading...'}</strong>
+          </div>
+        </div>
       </header>
 
       <section className="grid">
         <LiveChart price={price} levels={levels} />
         <StatsPanel price={price} levelsCount={levels.length} tradesCount={trades.length} analytics={analytics} />
-        <LevelsPanel levels={levels} />
+        <LevelsPanel levels={levels} price={price} />
         <MonteCarloChart probability={mc.hit_tp_probability || Math.min(90, Math.max(40, winRate || 50))} bins={mc.bins || []} />
       </section>
 
       <section className="grid">
         <ChatPanel onAnalyze={handleChatAnalyze} busy={chatBusy} />
         <section className="card chat-history">
-          <h2>Conversation</h2>
+          <h2>AI Conversation Feed</h2>
           <div className="chat-scroll">
             {chatMessages.map((m, i) => (
               <div key={i} className={`chat-bubble ${m.role}`}>
-                {m.text}
+                <p className="bubble-role">{m.role === 'user' ? 'You' : 'CRL AI'}</p>
+                <p>{m.text}</p>
               </div>
             ))}
-            {chatMessages.length === 0 ? <p className="hint">Ask for market analysis in natural language.</p> : null}
+            {chatMessages.length === 0 ? <p className="hint">Try: "Buy if BTC closes above resistance and set safe stop"</p> : null}
           </div>
         </section>
       </section>

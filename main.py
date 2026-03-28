@@ -102,6 +102,7 @@ def _contextual_pattern_metrics(pattern_name: str, side: str, volatility: float)
             .limit(150)
             .all()
         )
+        global_rows = session.query(PatternStat).all()
 
     side_samples = len(side_rows)
     side_rate = 0.0
@@ -128,6 +129,16 @@ def _contextual_pattern_metrics(pattern_name: str, side: str, volatility: float)
         weight_total += 0.20
 
     if weight_total == 0.0:
+        global_rates: list[float] = []
+        global_samples = 0
+        for row in global_rows:
+            total = row.wins + row.losses
+            if total <= 0:
+                continue
+            global_rates.append((row.wins / total) * 100)
+            global_samples += total
+        if global_rates:
+            return sum(global_rates) / len(global_rates), global_samples
         return 50.0, 0
 
     return weighted_sum / weight_total, (base_samples + side_samples + regime_samples)
@@ -397,9 +408,12 @@ async def chat_analyze(payload: ChatAnalyzeRequest) -> dict[str, object]:
     blended = _blend_confidence(hit_rate, distribution.result.hit_tp_probability, float(ml["confidence"]), samples)
 
     message = (
-        f"Setup {plan.pattern} ({plan.side}). Market {market_price:,.2f}. "
-        f"Entry {plan.entry:,.2f}, TP1 {plan.tp1:,.2f}, TP2 {plan.tp2:,.2f}, TP3 {plan.tp3:,.2f}, SL {plan.stop_loss:,.2f}. "
-        f"Monte Carlo {distribution.result.hit_tp_probability:.1f}%, historical {hit_rate:.1f}%, ML {float(ml['confidence']):.1f}% -> blended {blended:.1f}%."
+        f"🧠 CRL Setup: {plan.pattern} ({plan.side})\n"
+        f"💰 Market: ${market_price:,.2f}\n"
+        f"🎯 Entry: ${plan.entry:,.2f} | TP1: ${plan.tp1:,.2f} | TP2: ${plan.tp2:,.2f} | TP3: ${plan.tp3:,.2f}\n"
+        f"🛡️ Stop Loss: ${plan.stop_loss:,.2f} | RR: 1:{plan.rr:.2f}\n"
+        f"📊 Confidence -> Monte Carlo: {distribution.result.hit_tp_probability:.1f}%, Historical: {hit_rate:.1f}%, ML: {float(ml['confidence']):.1f}%, Blended: {blended:.1f}%\n"
+        "⚠️ Entry only on 5m candle CLOSE confirmation. Never trade on a wick."
     )
 
     return {

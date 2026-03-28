@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import base64
 import json
 import re
@@ -97,14 +98,14 @@ def _parse_structured_reply(reply: Any) -> dict[str, Any]:
     }
 
 
-async def _analyze_with_gemini(user_text: str, image_path: str | None = None) -> dict[str, Any]:
-    if not settings.gemini_api_key:
-        return _fallback_analysis(user_text, "Gemini key missing")
+async def _analyze_with_gemini(user_text: str, image_path: str | None = None, api_key: str | None = None) -> dict[str, Any]:
+    if not api_key:
+        api_key = settings.gemini_api_key
+    if not api_key:
+        api_key = settings.gemini_api_key_backup
+    if not api_key:
+        return _fallback_analysis(user_text, "Gemini keys missing")
 
-    url = (
-        f"https://generativelanguage.googleapis.com/v1beta/models/{settings.gemini_model}:generateContent"
-        f"?key={settings.gemini_api_key}"
-    )
     schema_instruction = (
         "Return strict JSON with keys: pattern, pattern_template, bias, key_levels, entry_hint, summary. "
         "pattern_template must be one of box, triangle, channel, flag, reversal, generic."
@@ -119,10 +120,44 @@ async def _analyze_with_gemini(user_text: str, image_path: str | None = None) ->
         "generationConfig": {"temperature": 0.2, "maxOutputTokens": 1200},
     }
 
+    model_candidates = [
+        settings.gemini_model,
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
+        "gemini-1.5-flash-latest",
+    ]
+
+    last_exc: Exception | None = None
     async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.post(url, json=payload)
-        response.raise_for_status()
-        data = response.json()
+        for model_name in model_candidates:
+            url = (
+                f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
+                f"?key={api_key}"
+            )
+            try:
+                response = await client.post(url, json=payload)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    break
+                elif response.status_code == 429:
+                    # Quota exceeded - move to next service (OpenRouter)
+                    last_exc = Exception(f"Gemini: HTTP 429 (quota exceeded)")
+                    continue
+                elif response.status_code == 404:
+                    # Model doesn't exist, try next model
+                    last_exc = Exception(f"Gemini model {model_name}: HTTP 404")
+                    continue
+                else:
+                    # Other error
+                    last_exc = Exception(f"Gemini: HTTP {response.status_code}")
+                    continue
+            except Exception as exc:
+                last_exc = exc
+                continue
+        else:
+            # All models tried, raise error
+            raise RuntimeError(f"Gemini request failed for all models: {last_exc}")
 
     text = ""
     try:
@@ -165,30 +200,61 @@ async def analyze_chart(user_text: str, image_path: str | None = None) -> dict[s
                 "content": content,
             }
         ],
+        "max_tokens": 1200,
     }
 
-    headers = {
-        "Authorization": f"Bearer {settings.openrouter_api_key}",
-        "Content-Type": "application/json",
-    }
+    # Try primary and backup OpenRouter keys
+    for api_key in [settings.openrouter_api_key, settings.openrouter_api_key_backup]:
+        if not api_key:
+            continue
+        
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
 
-    try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
-            response.raise_for_status()
-            data = response.json()
-    except httpx.HTTPStatusError as exc:
-        if exc.response is not None and exc.response.status_code == 402:
+        max_retries = 3
+        for attempt in range(max_retries):
             try:
-                return await _analyze_with_gemini(user_text=user_text, image_path=image_path)
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    response = await client.post("https://openrouter.ai/api/v1/chat/completions", headers=headers, json=payload)
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        reply = data["choices"][0]["message"]["content"]
+                        return _parse_structured_reply(reply)
+                    elif response.status_code == 429:
+                        # Rate limited - wait and retry same key
+                        if attempt < max_retries - 1:
+                            wait_time = 2 ** attempt
+                            await asyncio.sleep(wait_time)
+                            continue
+                        else:
+                            break  # Move to next key
+                    elif response.status_code in (402, 401):
+                        # Insufficient credits or auth error - try next key
+                        break
+                    else:
+                        # Other error - try next key
+                        break
+            except httpx.HTTPStatusError as exc:
+                if exc.response is not None and exc.response.status_code == 429:
+                    if attempt < max_retries - 1:
+                        wait_time = 2 ** attempt
+                        await asyncio.sleep(wait_time)
+                        continue
+                break
             except Exception:
-                return _fallback_analysis(user_text, "OpenRouter credits exhausted (402); Gemini fallback failed")
-        return _fallback_analysis(user_text, f"OpenRouter HTTP error {exc.response.status_code if exc.response else 'unknown'}")
-    except Exception as exc:
+                break
+    
+    # Both OpenRouter keys failed or exhausted, try Gemini keys
+    for gemini_key in [settings.gemini_api_key, settings.gemini_api_key_backup]:
+        if not gemini_key:
+            continue
         try:
-            return await _analyze_with_gemini(user_text=user_text, image_path=image_path)
+            return await _analyze_with_gemini(user_text=user_text, image_path=image_path, api_key=gemini_key)
         except Exception:
-            return _fallback_analysis(user_text, f"OpenRouter unavailable: {exc}; Gemini fallback failed")
-
-    reply = data["choices"][0]["message"]["content"]
-    return _parse_structured_reply(reply)
+            continue
+    
+    # All keys failed
+    return _fallback_analysis(user_text, "All API keys exhausted or invalid")

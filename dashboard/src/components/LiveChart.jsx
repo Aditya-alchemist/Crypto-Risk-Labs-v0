@@ -19,7 +19,7 @@ export default function LiveChart({ price, levels }) {
       symbol: 'BITSTAMP:BTCUSD',
       interval: '5',
       timezone: 'Etc/UTC',
-      theme: 'dark',
+      theme: 'light',
       style: '1',
       locale: 'en',
       enable_publishing: false,
@@ -51,7 +51,7 @@ export default function LiveChart({ price, levels }) {
 
   return (
     <section className="card chart-card">
-      <h2>Live BTC (TradingView 5m)</h2>
+      <h2>Live BTC Structure Map (TradingView 5m)</h2>
       <div className="price">${Number(price || 0).toLocaleString()}</div>
       <div ref={containerRef} className="tv-chart" />
       <div className="levels-overlay">
@@ -62,7 +62,7 @@ export default function LiveChart({ price, levels }) {
           </div>
         ))}
       </div>
-      <p className="hint">TradingView feed with your watched levels listed below.</p>
+      <p className="hint">TradingView feed with your watched levels and instant visual context under the chart.</p>
     </section>
   )
 }

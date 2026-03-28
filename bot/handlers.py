@@ -19,7 +19,7 @@ from bot.pattern_engine import build_trade_plan
 from bot.pattern_templates import resolve_template
 from bot.self_learner import describe_model_state, maybe_retrain_model, predict_trade_outcome
 
-WARNING_LINE = "WARNING: Entry only on 5m candle CLOSE confirmation. Never trade on a wick."
+WARNING_LINE = "⚠️ Entry only on 5m candle CLOSE confirmation. Never trade on a wick."
 
 
 @dataclass
@@ -255,25 +255,25 @@ def _format_analysis_text(
 ) -> str:
     verdict = "STRONG EDGE" if blended_confidence >= 65 else "MODERATE EDGE" if blended_confidence >= 55 else "LOW EDGE"
     return (
-        f"CRL BOT ANALYSIS\n"
-        f"================\n"
-        f"Setup: {plan.pattern} ({plan.side})\n"
-        f"Market Price: ${market_price:,.2f}\n\n"
-        f"TRADE PLAN\n"
+        f"🧠 CRL BOT ANALYSIS\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"📌 Setup: {plan.pattern} ({plan.side})\n"
+        f"💰 Market Price: ${market_price:,.2f}\n\n"
+        f"🎯 TRADE PLAN\n"
         f"Entry Zone: ${plan.entry:,.2f}\n"
         f"Target 1: ${plan.tp1:,.2f}\n"
         f"Target 2: ${plan.tp2:,.2f}\n"
         f"Target 3: ${plan.tp3:,.2f}\n"
         f"Stop Loss: ${plan.stop_loss:,.2f}\n"
         f"Risk/Reward: 1:{plan.rr:.2f}\n\n"
-        f"CONFIDENCE ENGINE\n"
+        f"📊 CONFIDENCE ENGINE\n"
         f"Monte Carlo (300): {monte_carlo_prob:.1f}%\n"
         f"Historical hit-rate: {historical_hit_rate:.1f}%\n"
         f"ML model: {ml_verdict} ({ml_confidence:.2f}%)\n"
         f"Blended confidence: {blended_confidence:.1f}%\n\n"
-        f"AI NOTE\n"
+        f"🤖 AI NOTE\n"
         f"{summary[:350]}\n\n"
-        f"VERDICT: {verdict}\n"
+        f"✅ VERDICT: {verdict}\n"
         f"{WARNING_LINE}"
     )
 
@@ -356,15 +356,18 @@ async def _run_strict_pipeline(
 def _format_levels() -> str:
     levels = list_active_levels()
     if not levels:
-        return "No active levels. Add one with /addlevel 84200 box_top"
-    return "\n".join(f"#{lvl.id} {lvl.price:.2f} ({lvl.label or 'unnamed'})" for lvl in levels)
+        return "📭 No active levels yet. Add one with /addlevel 84200 box_top"
+    lines = ["📌 WATCHED LEVELS"]
+    lines.extend(f"#{lvl.id}  ${lvl.price:,.2f}  ({lvl.label or 'unnamed'})" for lvl in levels)
+    lines.append(WARNING_LINE)
+    return "\n".join(lines)
 
 
 async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     text = (
-        "CRL Bot online\n"
-        "Use natural language or send a chart image with caption.\n"
-        "Quick commands: /tradeidea /analyze /patterns /model /price /help\n"
+        "🚀 CRL Bot is online and ready.\n"
+        "Send natural-language ideas or upload a chart image with a caption.\n"
+        "⚡ Quick commands: /tradeidea /analyze /patterns /model /price /help\n"
         + WARNING_LINE
     )
     await update.effective_message.reply_text(text)
@@ -372,11 +375,11 @@ async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     text = (
-        "BEGINNER GUIDE\n"
-        "1) Send chart image + text: I want to buy near this breakout\n"
+        "📘 BEGINNER GUIDE\n"
+        "1) Send chart image + caption: I want to buy near this breakout\n"
         "2) Or use text only: /tradeidea i want to buy at current price, analyze market\n"
-        "3) Bot will auto-detect pattern, build targets, stop loss, and confidence\n"
-        "4) Use /patterns to see learned hit-rates\n"
+        "3) Bot auto-detects pattern, targets, stop loss, and confidence\n"
+        "4) Use /patterns to view learned hit-rates\n"
         "5) Use /log box long 84200 WIN TP2 after trade result\n\n"
         + WARNING_LINE
     )
@@ -385,7 +388,7 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 async def price_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     price = await context.bot_data["services"].price_watcher.fetch_price()
-    await update.effective_message.reply_text(f"BTCUSD: {price:.2f}")
+    await update.effective_message.reply_text(f"💵 BTCUSD: ${price:,.2f}\n{WARNING_LINE}")
 
 
 async def levels_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -394,22 +397,22 @@ async def levels_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 
 async def addlevel_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if len(context.args) < 1:
-        await update.effective_message.reply_text("Usage: /addlevel <price> [label]")
+        await update.effective_message.reply_text("ℹ️ Usage: /addlevel <price> [label]")
         return
     try:
         price = float(context.args[0])
     except ValueError:
-        await update.effective_message.reply_text("Price must be a number.")
+        await update.effective_message.reply_text("❌ Price must be a number.")
         return
 
     label = " ".join(context.args[1:]) if len(context.args) > 1 else ""
     level = add_level(price=price, label=label)
-    await update.effective_message.reply_text(f"Added level #{level.id} at {level.price:.2f}")
+    await update.effective_message.reply_text(f"✅ Added level #{level.id} at ${level.price:,.2f} ({label or 'unnamed'})")
 
 
 async def log_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if len(context.args) < 4:
-        await update.effective_message.reply_text("Usage: /log <pattern> <side> <entry> <WIN|LOSS> [tp_hit]")
+        await update.effective_message.reply_text("ℹ️ Usage: /log <pattern> <side> <entry> <WIN|LOSS> [tp_hit]")
         return
 
     pattern, side, entry_raw, result = context.args[:4]
@@ -418,7 +421,7 @@ async def log_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
         entry = float(entry_raw)
     except ValueError:
-        await update.effective_message.reply_text("Entry must be numeric.")
+        await update.effective_message.reply_text("❌ Entry must be numeric.")
         return
 
     with SessionLocal() as session:
@@ -439,13 +442,13 @@ async def log_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     retrained = maybe_retrain_model()
     suffix = " Model retrained." if retrained else ""
-    await update.effective_message.reply_text(f"Logged trade for {pattern}.{suffix}")
+    await update.effective_message.reply_text(f"📝 Logged trade for {pattern} ({side.upper()} / {result.upper()}).{suffix}")
 
 
 async def analyze_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not context.args:
         await update.effective_message.reply_text(
-            "Usage:\n"
+            "ℹ️ Usage:\n"
             "- /analyze <pattern> <long|short> <entry> <swing_ref>\n"
             "- /analyze i want to buy at current price, analyze market"
         )
@@ -470,7 +473,7 @@ async def analyze_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
             text = await _run_strict_pipeline(context=context, user_text=prompt, image_path=None)
             await update.effective_message.reply_text(text)
         except Exception as exc:
-            await update.effective_message.reply_text(f"Natural analysis failed: {exc}")
+            await update.effective_message.reply_text(f"❌ Natural analysis failed: {exc}")
         return
 
     pattern = context.args[0]
@@ -480,7 +483,7 @@ async def analyze_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         entry = float(context.args[2])
         swing_ref = float(context.args[3])
     except ValueError:
-        await update.effective_message.reply_text("Entry and swing_ref must be numeric.")
+        await update.effective_message.reply_text("❌ Entry and swing_ref must be numeric.")
         return
 
     side = side.lower()
@@ -547,7 +550,7 @@ async def analyze_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
 async def tradeidea_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not context.args:
-        await update.effective_message.reply_text("Usage: /tradeidea <your setup text, e.g. buying at 84200 on box breakout>")
+        await update.effective_message.reply_text("ℹ️ Usage: /tradeidea <your setup text, e.g. buying at 84200 on box breakout>")
         return
 
     prompt = " ".join(context.args)
@@ -555,7 +558,7 @@ async def tradeidea_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         text = await _run_strict_pipeline(context=context, user_text=prompt, image_path=None)
         await update.effective_message.reply_text(text)
     except Exception as exc:
-        await update.effective_message.reply_text(f"Trade idea analysis failed: {exc}")
+        await update.effective_message.reply_text(f"❌ Trade idea analysis failed: {exc}")
 
 
 async def photo_analysis_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -577,7 +580,7 @@ async def photo_analysis_handler(update: Update, context: ContextTypes.DEFAULT_T
         )
         await update.effective_message.reply_text(text)
     except Exception as exc:
-        await update.effective_message.reply_text(f"Image analysis failed: {exc}")
+        await update.effective_message.reply_text(f"❌ Image analysis failed: {exc}")
     finally:
         if temp_file_path and temp_file_path.exists():
             temp_file_path.unlink(missing_ok=True)
@@ -589,7 +592,7 @@ async def model_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         top = session.query(PatternStat).order_by((PatternStat.wins + PatternStat.losses).desc()).limit(5).all()
 
     lines = [
-        "CRL INTERNAL STATE",
+        "🧪 CRL INTERNAL STATE",
         f"Trained model file: {'yes' if state['has_trained_model'] else 'no'}",
         f"Fallback profile: {'yes' if state['has_fallback'] else 'no'}",
         f"Trade samples: {state['samples']}",
@@ -615,11 +618,11 @@ async def patterns_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         stats = _fallback_pattern_stats()
 
     if not stats:
-        await update.effective_message.reply_text("No pattern stats available yet.")
+        await update.effective_message.reply_text("📭 No pattern stats available yet.")
         return
 
     ranked = sorted(stats, key=lambda s: float(s.get("samples", 0)), reverse=True)[:10]
-    lines = ["LIVE PATTERN STATS"]
+    lines = ["📈 LIVE PATTERN STATS"]
     for row in ranked:
         lines.append(
             f"- {row.get('pattern', 'unknown')}: "
@@ -642,7 +645,7 @@ async def natural_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         text = await _run_strict_pipeline(context=context, user_text=raw, image_path=None)
         await update.effective_message.reply_text(text)
     except Exception as exc:
-        await update.effective_message.reply_text(f"Text analysis failed: {exc}")
+        await update.effective_message.reply_text(f"❌ Text analysis failed: {exc}")
 
 
 def build_handlers() -> list[BaseHandler]:

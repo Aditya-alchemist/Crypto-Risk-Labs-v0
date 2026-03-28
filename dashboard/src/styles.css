@@ -1,11 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
 :root {
-  --bg: #0b1320;
-  --bg-2: #122033;
-  --card: #13263f;
-  --text: #e6f0ff;
-  --muted: #95a9c5;
-  --accent: #46d3b0;
-  --danger: #ff6d67;
+  --bg: #f4f1ea;
+  --bg-secondary: #efe8db;
+  --surface: #fffdf7;
+  --surface-2: #f8f3e6;
+  --text: #17222f;
+  --muted: #5f6f83;
+  --line: #d9c8ad;
+  --accent: #009b8f;
+  --accent-2: #f2a900;
+  --danger: #c84f4f;
+  --success: #1f8f4f;
+  --shadow: 0 10px 30px rgba(30, 41, 59, 0.08);
 }
 
 * {
@@ -14,29 +21,81 @@
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: radial-gradient(circle at 10% 10%, #1f3555, #0b1320 55%);
+  font-family: 'Sora', 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at 9% 12%, rgba(0, 155, 143, 0.18), transparent 35%),
+    radial-gradient(circle at 88% 22%, rgba(242, 169, 0, 0.18), transparent 38%),
+    linear-gradient(140deg, var(--bg), var(--bg-secondary));
   color: var(--text);
 }
 
 .app-shell {
-  width: 100vw;
+  width: min(1400px, 100vw);
   min-height: 100vh;
-  margin: 0;
-  padding: 1rem;
+  margin: 0 auto;
+  padding: 1.2rem;
+  animation: rise-in 0.5s ease-out;
 }
 
-header {
+.topbar {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
+  align-items: flex-start;
+  gap: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: clamp(1.2rem, 1.8vw, 2rem);
+}
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--accent);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.subtle {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  max-width: 720px;
+}
+
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(130px, 1fr));
+  gap: 0.65rem;
+}
+
+.kpi-pill {
+  background: linear-gradient(135deg, #e8f6f5, #fff6de);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.55rem 0.75rem;
+}
+
+.kpi-pill span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.kpi-pill strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.94rem;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .chart-card {
@@ -44,15 +103,17 @@ header {
 }
 
 .card {
-  background: linear-gradient(160deg, var(--card), var(--bg-2));
-  border: 1px solid #27466f;
+  background: linear-gradient(160deg, var(--surface), var(--surface-2));
+  border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 0.9rem;
+  padding: 0.95rem;
+  box-shadow: var(--shadow);
 }
 
 .chart-card .price {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 800;
+  color: var(--accent);
 }
 
 .tv-chart {
@@ -60,13 +121,15 @@ header {
   height: min(78vh, 860px);
   min-height: 520px;
   margin-top: 0.75rem;
-  border: 1px solid #214061;
+  border: 1px solid var(--line);
   border-radius: 10px;
   overflow: hidden;
+  background: #fff;
 }
 
 .hint {
   color: var(--muted);
+  font-size: 0.88rem;
 }
 
 .simple-list {
@@ -79,29 +142,44 @@ header {
 .level-row {
   display: flex;
   justify-content: space-between;
-  padding: 0.35rem 0;
-  border-bottom: 1px solid #214061;
+  align-items: center;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #e9dcc8;
+  gap: 0.8rem;
+}
+
+.level-distance {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-family: 'IBM Plex Mono', monospace;
 }
 
 .stats-grid .stat {
   margin: 0.7rem 0;
+  padding: 0.45rem 0.55rem;
+  background: #fff;
+  border: 1px dashed #e6d5bc;
+  border-radius: 10px;
 }
 
 .stats-grid label {
   color: var(--muted);
   display: block;
+  font-size: 0.8rem;
 }
 
 .probability-bar {
   height: 16px;
-  background: #1d3858;
+  background: #d6e8e6;
   border-radius: 999px;
   overflow: hidden;
 }
 
 .probability-bar div {
   height: 100%;
-  background: linear-gradient(90deg, var(--danger), var(--accent));
+  background: linear-gradient(90deg, var(--danger), var(--accent), #0c776f);
 }
 
 .mc-bars {
@@ -110,26 +188,27 @@ header {
   align-items: flex-end;
   gap: 4px;
   padding: 0.35rem;
-  border: 1px solid #214061;
+  border: 1px solid var(--line);
   border-radius: 10px;
-  background: #10233a;
+  background: #fff;
 }
 
 .mc-bar {
   flex: 1;
   min-height: 6px;
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(180deg, #6ee7b7, #1d4ed8);
+  background: linear-gradient(180deg, #00a896, #005f73);
 }
 
 .chat-panel textarea {
   width: 100%;
   resize: vertical;
   border-radius: 8px;
-  border: 1px solid #2b4b74;
-  background: #0f2238;
+  border: 1px solid var(--line);
+  background: #fff;
   color: var(--text);
   padding: 0.6rem;
+  font-family: 'IBM Plex Mono', monospace;
 }
 
 .chat-form {
@@ -140,35 +219,73 @@ header {
 .chat-form button {
   border: none;
   border-radius: 8px;
-  padding: 0.55rem 0.8rem;
-  background: linear-gradient(120deg, #38bdf8, #22c55e);
-  color: #082032;
+  padding: 0.6rem 0.9rem;
+  background: linear-gradient(120deg, var(--accent), #0a776f);
+  color: #f8fffe;
   font-weight: 700;
+  cursor: pointer;
+}
+
+.chat-form button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.quick-prompt-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 0.6rem;
+}
+
+.ghost-button {
+  border: 1px solid #c3d7d4;
+  background: #f2faf9;
+  color: #246562;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  padding: 0.35rem 0.6rem;
+  cursor: pointer;
 }
 
 .chat-history {
-  min-height: 220px;
+  min-height: 280px;
 }
 
 .chat-scroll {
-  max-height: 320px;
+  max-height: 380px;
   overflow: auto;
   display: grid;
-  gap: 0.4rem;
+  gap: 0.55rem;
 }
 
 .chat-bubble {
-  padding: 0.5rem 0.65rem;
-  border-radius: 10px;
+  padding: 0.65rem 0.7rem;
+  border-radius: 12px;
   line-height: 1.4;
+  border: 1px solid transparent;
+}
+
+.chat-bubble p {
+  margin: 0;
+}
+
+.bubble-role {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.2rem;
 }
 
 .chat-bubble.user {
-  background: #24496f;
+  background: #e8f6f5;
+  border-color: #b8dfdc;
 }
 
 .chat-bubble.assistant {
-  background: #163452;
+  background: #fff8eb;
+  border-color: #f0dab5;
 }
 
 .trade-log table {
@@ -180,17 +297,64 @@ header {
 .trade-log td {
   text-align: left;
   padding: 0.45rem;
-  border-bottom: 1px solid #214061;
+  border-bottom: 1px solid #ead9be;
+}
+
+.result-chip {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.15rem 0.52rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.result-chip.win {
+  color: #0b5f32;
+  background: #d8f4e4;
+}
+
+.result-chip.loss {
+  color: #7f1d1d;
+  background: #fde2e2;
+}
+
+.good {
+  color: var(--success);
+}
+
+.bad {
+  color: var(--danger);
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 800px) {
-  header {
+  .topbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .kpi-strip {
+    width: 100%;
+    grid-template-columns: 1fr;
   }
 
   .tv-chart {
     height: 62vh;
     min-height: 380px;
+  }
+
+  .trade-log {
+    overflow-x: auto;
   }
 }
