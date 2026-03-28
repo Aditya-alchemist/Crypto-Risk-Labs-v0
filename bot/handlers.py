@@ -34,11 +34,11 @@ def command_specs() -> list[tuple[str, str]]:
         ("price", "Show current BTCUSDT price"),
         ("levels", "List watched price levels"),
         ("addlevel", "Add watched level: /addlevel 84200 box_top"),
-        ("tradeidea", "Natural language idea: /tradeidea buying near support"),
-        ("analyze", "Legacy numeric mode or natural language mode"),
-        ("patterns", "Show learned pattern stats"),
-        ("model", "Show internal model state"),
         ("log", "Log outcome: /log box long 84200 WIN TP2"),
+        ("analyze", "Legacy numeric mode or natural language mode"),
+        ("tradeidea", "Natural language idea: /tradeidea buying near support"),
+        ("model", "Show internal model state"),
+        ("patterns", "Show learned pattern stats"),
     ]
 
 

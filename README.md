@@ -280,14 +280,21 @@ Monte Carlo Probability: 42.67%
 
 ---
 
-### Telegram Bot Output Example
+### Telegram Chat Interface Example
 
-**User Message:**
+![Telegram Bot Output](docs/screenshots/telegram-analysis-output.png)
+
+**Live Telegram Chat Screenshot:**
+> **Bot:** Crypto Risk Labs v0  
+> **Timestamp:** March 25, 2026 at 1:05 AM UTC  
+> **Format:** Telegram mobile UI with dark theme
+
+**User sends:**
 ```
 /analyze i want to buy at current price, analyze market
 ```
 
-**Bot Response:**
+**Bot replies (in Telegram chat):**
 ```
 CRL BOT ANALYSIS
 ================
@@ -318,14 +325,10 @@ WARNING: Entry only on 5m candle CLOSE
 confirmation. Never trade on a wick.
 ```
 
-![Telegram Bot Output](docs/screenshots/telegram-analysis-output.png)
-
-**Screenshot Details:**
-- Timestamp: March 25, 2026 at 1:05 AM UTC
-- Current BTC price: $69,369.00
-- Format: Telegram mobile UI with dark theme
+**Response Details:**
 - Response time: <2 seconds from user message to analysis
-- Confidence breakdown shows proper weighting of all 3 sources (42% MC + 12.5% Historical + 50% ML = 33.7% blended)
+- Confidence breakdown: 42% MC + 12.5% Historical + 50% ML = 33.7% blended
+- Accessible: Mobile Telegram app on any device with bot token configured
 
 ---
 
@@ -738,11 +741,11 @@ Supported commands:
 - /price: live BTC price snapshot.
 - /levels: current watched levels.
 - /addlevel <price> [label]: register levels.
-- /tradeidea <text>: natural-language analysis.
-- /analyze ...: strict numeric or natural mode.
-- /patterns: learned pattern performance table.
-- /model: learner state and sample diagnostics.
 - /log <pattern> <side> <entry> <WIN|LOSS> [tp_hit]: persist outcomes.
+- /analyze ...: strict numeric or natural mode.
+- /tradeidea <text>: natural-language analysis.
+- /model: learner state and sample diagnostics.
+- /patterns: learned pattern performance table.
 
 The bot also supports two non-command interaction modes:
 
