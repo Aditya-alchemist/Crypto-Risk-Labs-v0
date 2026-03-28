@@ -240,7 +240,9 @@ Monte Carlo Probability: 42.67%
 - **Result:** TP2 hit before any pullback
 - *Chart: Price consolidated at support then broke upward, hitting targets in consecutive 5m candles*
 
-![Box Breakout Entry](docs/screenshots/btc-box-breakout-0714.png)
+![TBox Breakout](docs/screenshots/telegram-analysis-output.png)
+
+
 
 ---
 
@@ -284,7 +286,8 @@ Monte Carlo Probability: 42.67%
 
 **Live Telegram Chat Screenshot:**
 
-![Telegram Chat Interface](docs/screenshots/telegram-analysis-output.png)
+
+![Telegram Interface](docs/screenshots/btc-box-breakout-0714.png)
 
 > **Bot:** Crypto Risk Labs v0  
 > **Timestamp:** March 25, 2026 at 1:05 AM UTC  
