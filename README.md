@@ -282,9 +282,10 @@ Monte Carlo Probability: 42.67%
 
 ### Telegram Chat Interface Example
 
-![Telegram Bot Output](docs/screenshots/telegram-analysis-output.png)
-
 **Live Telegram Chat Screenshot:**
+
+![Telegram Chat Interface](docs/screenshots/telegram-analysis-output.png)
+
 > **Bot:** Crypto Risk Labs v0  
 > **Timestamp:** March 25, 2026 at 1:05 AM UTC  
 > **Format:** Telegram mobile UI with dark theme
