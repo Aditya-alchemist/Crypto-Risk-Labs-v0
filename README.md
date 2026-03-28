@@ -240,6 +240,8 @@ Monte Carlo Probability: 42.67%
 - **Result:** TP2 hit before any pullback
 - *Chart: Price consolidated at support then broke upward, hitting targets in consecutive 5m candles*
 
+![Box Breakout Entry](docs/screenshots/btc-box-breakout-0714.png)
+
 ---
 
 **Example 2: Extended Move to TP3 (2:01 UTC)**
@@ -251,6 +253,8 @@ Monte Carlo Probability: 42.67%
 - **Result:** All three targets hit in 6 hours
 - *Chart: Strong uptrend continuation, multiple candles closed above each target, no pullback to SL*
 
+![Multi-Target Hit](docs/screenshots/btc-multi-target-0201.png)
+
 ---
 
 **Example 3: Stop Loss Avoided (12:44 UTC)**
@@ -261,6 +265,8 @@ Monte Carlo Probability: 42.67%
 - **Result:** Price reversed before SL, closed at TP1
 - *Chart: Initially broke support but bounced, halted at TP1 level with strong reversal signal*
 
+![Channel Analysis](docs/screenshots/btc-channel-1244.png)
+
 ---
 
 **Example 4: Late-Day Recovery (11:56 UTC)**
@@ -269,6 +275,8 @@ Monte Carlo Probability: 42.67%
 - Risk Level: $69,050
 - **Result:** Target hit after 90-minute wait, confirmed by candle close
 - *Chart: Ranging market with tight consolidation, broke upper band with volume confirmation*
+
+![Consolidation Breakout](docs/screenshots/btc-consolidation-1156.png)
 
 ---
 
@@ -309,6 +317,8 @@ VERDICT: LOW EDGE
 WARNING: Entry only on 5m candle CLOSE
 confirmation. Never trade on a wick.
 ```
+
+![Telegram Bot Output](docs/screenshots/telegram-analysis-output.png)
 
 **Screenshot Details:**
 - Timestamp: March 25, 2026 at 1:05 AM UTC
