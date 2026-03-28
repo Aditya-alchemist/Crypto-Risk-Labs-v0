@@ -604,15 +604,15 @@ flowchart TD
 Confidence blending follows a weighted model with sample calibration. Historical confidence is gradually trusted more as sample count increases.
 
 $$
-	ext{sample\_factor} = \min\left(\frac{n}{50}, 1\right)
+\text{sample_factor} = \min\left(\frac{n}{50}, 1\right)
 $$
 
 $$
-	ext{calibrated\_historical} = \text{historical}\cdot\text{sample\_factor} + 50\cdot(1-\text{sample\_factor})
+\text{calibrated_historical} = \text{historical} \cdot \text{sample_factor} + 50 \cdot (1-\text{sample_factor})
 $$
 
 $$
-	ext{blended} = 0.35\cdot\text{calibrated\_historical} + 0.40\cdot\text{monte\_carlo} + 0.25\cdot\text{ml\_confidence}
+\text{blended} = 0.35 \cdot \text{calibrated_historical} + 0.40 \cdot \text{monte_carlo} + 0.25 \cdot \text{ml_confidence}
 $$
 
 The final confidence is clamped to $[0,100]$.
@@ -708,12 +708,12 @@ This is especially relevant for Python 3.14 environments where certain ML packag
 
 ```mermaid
 flowchart LR
-	CSV1[data/historical/btc_daily.csv] --> S[Historical Scanner]
-	CSV2[data/historical/btc_5min.csv] --> S
-	S --> F[Extract Baseline Patterns]
-	F --> DB[(pattern_stats table)]
-	DB --> API[/api/pattern-stats]
-	DB --> TG[/patterns command]
+	CSV1["data/historical/btc_daily.csv"] --> S["Historical Scanner"]
+	CSV2["data/historical/btc_5min.csv"] --> S
+	S --> F["Extract Baseline Patterns"]
+	F --> DB[("pattern_stats table")]
+	DB --> API["api/pattern-stats"]
+	DB --> TG["patterns command"]
 ```
 
 Baseline seeded categories include box, triangle, and channel. These are priors, not immutable truths. Over time, /log outcomes should dominate behavior.
